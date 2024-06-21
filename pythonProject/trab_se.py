@@ -2,13 +2,44 @@ from flask import Flask, render_template, redirect, request, url_for, Response
 # from gpiozero import LED
 from time import sleep
 import cv2
+from datetime import datetime
+import requests
+
+API_KEY = '1fd96af488c1e2f6bbc5b108b952ee7c'
+CITY = 'Blumenau'
 
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
 
-@app.route('/hello')
+@app.route('/main')
 def say_hello():
-    return "Hello world!"
+    
+    # Aquisição do horário
+    current_time = datetime.now().strftime("%H:%M:%S")
+
+    # Aquisição do clima via API
+    # URL da API de previsão do tempo
+    url = f'http://api.openweathermap.org/data/2.5/weather?q={CITY}&appid={API_KEY}&units=metric&lang=pt_br'
+    
+    # Fazer a solicitação para a API
+    response = requests.get(url)
+    weather_data = response.json()
+    
+    # Extrair os dados relevantes
+    if weather_data["cod"] == 200:
+        temperature = int(weather_data["main"]["temp"])
+        description = weather_data["weather"][0]["description"]
+        city = weather_data["name"]
+        weather_info = {
+            "temperature": temperature,
+            "description": description,
+            "city": city
+        }
+    else:
+        weather_info = None
+
+    return render_template("main.html", current_time=current_time, weather_info=weather_info, description=description)
+
 
 @app.route('/bbb1')
 def teste():

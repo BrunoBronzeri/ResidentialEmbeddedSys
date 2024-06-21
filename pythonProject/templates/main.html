@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt_br">
+    <head>
+        <title>Smart HUB</title>
+        <script>
+            function updateTime() {
+                var now = new Date();
+                var hours = String(now.getHours()).padStart(2, '0');
+                var minutes = String(now.getMinutes()).padStart(2, '0');
+                var seconds = String(now.getSeconds()).padStart(2, '0');
+                var timeString = hours + ':' + minutes + ':' + seconds;
+                document.getElementById('clock').innerText = timeString;
+            }
+            setInterval(updateTime, 1000);
+            window.onload = updateTime;
+        </script>
+    </head>
+    <body>
+        <div id="clock">{{ current_time }}</div>
+        <h1>Smart HUB - Moratellix</h1>
+
+        <h1>Previsão do Tempo para {{ weather_info.city }}</h1>
+        {% if weather_info %}
+            <p>Temperatura: {{ weather_info.temperature }}°C - {{weather_info.description}}</p>
+        {% else %}
+            <p>Não foi possível obter a previsão do tempo.</p>
+        {% endif %}
+    </body>
+</html>
