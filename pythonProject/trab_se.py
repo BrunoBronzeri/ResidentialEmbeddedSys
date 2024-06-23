@@ -11,6 +11,8 @@ CITY = 'Blumenau'
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
 
+# ---------------------------------------------- MAIN -------------------------------------------------------------------
+
 @app.route('/main')
 def say_hello():
     
@@ -40,6 +42,7 @@ def say_hello():
 
     return render_template("main.html", current_time=current_time, weather_info=weather_info, description=description)
 
+# ---------------------------------------------- LED -------------------------------------------------------------------
 
 @app.route('/bbb1')
 def teste():
@@ -67,6 +70,21 @@ def led_on():
 def led():
     return render_template("index.html")
 
+# ---------------------------------------------- LUZ -------------------------------------------------------------------
+
+@app.route('/luz')
+def luz():
+    return render_template("led_on.html")
+
+# ---------------------------------------------- TEMP -------------------------------------------------------------------
+
+@app.route('/temp')
+def temp():
+    return render_template("temp.html")
+
+
+# ---------------------------------------------- CAM -------------------------------------------------------------------
+
 def gen_frames():
     cap = cv2.VideoCapture(0)  # Captura do dispositivo de vídeo 0 (normalmente a webcam)
     while True:
@@ -86,6 +104,8 @@ def index():
 @app.route('/video_feed')
 def video_feed():
     return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+# ----------------------------------------------  -------------------------------------------------------------------
 
 if __name__ == "__main__":
     app.run(debug=True, port = 5001, host="0.0.0.0")
