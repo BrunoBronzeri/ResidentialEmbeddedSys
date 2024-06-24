@@ -1,11 +1,10 @@
 {%extends "base.html"%}
-{% block title %}Ligar o LED{% endblock %}
 
-{% block conteudo%}
+{% block content %}
 <button onclick="window.location.href='/main'">Retorno</button>
 <h1>Ligar Botão</h1>
 <form action="#" method = "post">
     <input type="submit" name="nm" value="ON"/>
     <input type="submit" name="nm" value="OFF"/>
 </form>
-{%endblock%}
+{% endblock %}
