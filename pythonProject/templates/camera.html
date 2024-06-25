@@ -11,4 +11,40 @@
     <h1>Webcam Stream</h1>
     <img src="{{ url_for('video_feed') }}" width="640" height="480">
 </div>
+<div>
+    
+    <input type="range" id="angle" name="angle" min="-90" max="90" value="0">
+    <span id="sliderValue">0</span>
+    <form id="moveForm" action="#" method="post">
+        <input type="submit" value="Move">
+    </form>
+</div>
+<script>
+    $(document).ready(function() {
+        // Atualiza o valor do slider e do texto ao mover o slider
+        $('#angle').on('input', function() {
+            var angleValue = $(this).val();
+            $('#sliderValue').text(angleValue);
+        });
+
+        // Envia a requisição AJAX ao enviar o formulário
+        $('#moveForm').submit(function(event) {
+            event.preventDefault();  // Evita o comportamento padrão do formulário
+
+            var angle = $('#angle').val();
+
+            $.ajax({
+                type: 'POST',
+                url: '/cam',
+                data: { angle: angle },
+                success: function(response) {
+                    console.log('Servo moved successfully');
+                },
+                error: function(error) {
+                    console.error('Error moving servo:', error);
+                }
+            });
+        });
+    });
+</script>
 {% endblock %}

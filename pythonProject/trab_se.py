@@ -1,7 +1,7 @@
-from flask import Flask, render_template, redirect, request, url_for, Response
-# from gpiozero import LED
+from flask import Flask, render_template, redirect, request, url_for, Response, jsonify
+# from gpiozero import LED, AngularServo
 from time import sleep
-import cv2
+import cv2#importa o cv2, ás vezes
 from datetime import datetime
 import requests
 
@@ -10,6 +10,8 @@ CITY = 'Blumenau' # City name to be searched through API
 
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
+
+
 
 # ------------------------------------------------ FUNCTIONS ------------------------------------------------------------
 ## FUNCTION TO AQUIRE TIME AND WEATHER INFO -----------------------------------------------------------------------------
@@ -38,6 +40,14 @@ def say_hello():
         weather_info = None
 
     return current_time, weather_info, description
+
+## FUNCTION TO MOVE SERVO--------------------------------------------------------------------------------
+def move(angle):
+    #servo = AngularServo(18, min_angle = -90, max_angle = 90) (Porta, min, max)
+    #servo.angle = angle
+    return jsonify({"status": "success", "angle": angle})
+    
+
 
 ## FUNCTION TO GENERATE CAMREA FRAMES-------------------------------------------------------------------------------------
 def gen_frames():
@@ -106,11 +116,14 @@ def temp():
 
 
 # ------------------------------------------------- CAM -------------------------------------------------------------------
-@app.route('/cam')
-def index():
-    [current_time, weather_info, description] = say_hello()
-    return render_template('camera.html', current_time=current_time, weather_info=weather_info, description=description)
-
+@app.route('/cam', methods=['GET','POST'])#Não mexa -> horas gastas = 2.5
+def cam_on():
+    if request.method == 'GET':
+        [current_time, weather_info, description] = say_hello()
+        return render_template('camera.html', current_time=current_time, weather_info=weather_info, description=description)
+    else:
+        angle = request.form['angle']
+        return move(angle)
 @app.route('/video_feed')
 def video_feed():
     return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
