@@ -1,17 +1,38 @@
 from flask import Flask, render_template, redirect, request, url_for, Response, jsonify
-# from gpiozero import LED, AngularServo
+
+# BROKENzinho
+from gpiozero.pins.pigpio import PiGPIOFactory
+from gpiozero import LED, AngularServo, Servo
+# BROKENZINHO
+
+import RPi.GPIO as GPIO
+
 from time import sleep
-import cv2#importa o cv2, ás vezes
+import cv2 #importa o cv2, ás vezes
 from datetime import datetime
 import requests
 
 API_KEY = '1fd96af488c1e2f6bbc5b108b952ee7c' # Define personal key for API
 CITY = 'Blumenau' # City name to be searched through API
 
+#--------------------------------
+servo_pin = 18
+# myFactory = PiGPIOFactory()
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(servo_pin, GPIO.OUT)
+
+# PWM config
+pwm = GPIO.PWM(servo_pin, 50)
+pwm.start(0)
+#-------------------------------
+
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
 
+# myServo = Servo(servo_pin, min_pulse_width = 0.05/100, max_pulse_width = 2.5/1000, pin_factory = myFactory)
 
+angulo_inicial = 0
+angulo_objetivo = 180
 
 # ------------------------------------------------ FUNCTIONS ------------------------------------------------------------
 ## FUNCTION TO AQUIRE TIME AND WEATHER INFO -----------------------------------------------------------------------------
@@ -43,15 +64,44 @@ def say_hello():
 
 ## FUNCTION TO MOVE SERVO--------------------------------------------------------------------------------
 def move(angle):
-    #servo = AngularServo(18, min_angle = -90, max_angle = 90) (Porta, min, max)
+    #[current_time, weather_info, description] = say_hello()
+    #factory = PiGPIOFactory()
+    #angle = int(angle)
+    #print(angle)
+    #print(type(angle))
+    #angle = int(angle)
+    #servo = AngularServo(17, min_angle = -40, max_angle = 40, pin_factory=factory)
     #servo.angle = angle
+    mini = 2
+    maxi = 12
+
+    duty = mini + (angle / 180)*(maxi-mini)
+    GPIO.output(servo_pin, True)
+    pwm.ChangeDutyCycle(duty)
+    sleep(1)
+    GPIO.output(servo_pin, False)
+    pwm.ChangeDutyCycle(0)
+#     myServo.value = 0
+    
     return jsonify({"status": "success", "angle": angle})
     
-
+## FUNCTION TO SMOOTH SERVO'S MOVEMENT
+def suave(start, end, step=1, delay=0.02):
+    if start<end:
+        for angle in range(start, end, step):
+            move(angle)
+            sleep(delay)
+    else:
+        for angle in range(start, end,-step):
+            move(angle)
+            sleep(delay)
 
 ## FUNCTION TO GENERATE CAMREA FRAMES-------------------------------------------------------------------------------------
 def gen_frames():
+   # pipeline = "v4l2src device = /dev/vide0 ! videoconvert ! appsink"
     cap = cv2.VideoCapture(0)  # Capture from video device 0 (typically the webcam)
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 320)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 240)
     while True:
         success, frame = cap.read()  # Read the webcam frame
         if not success:
@@ -116,14 +166,21 @@ def temp():
 
 
 # ------------------------------------------------- CAM -------------------------------------------------------------------
-@app.route('/cam', methods=['GET','POST'])#Não mexa -> horas gastas = 2.5
+@app.route('/cam', methods=['GET','POST']) # Não mexa -> horas gastas = 7.5
 def cam_on():
+    global angulo_inicial, angulo_objetivo
     if request.method == 'GET':
         [current_time, weather_info, description] = say_hello()
         return render_template('camera.html', current_time=current_time, weather_info=weather_info, description=description)
     else:
+        [current_time, weather_info, description] = say_hello()
         angle = request.form['angle']
-        return move(angle)
+        angle = int(angle)
+#         angulo_objetivo = angle
+#         suave(angulo_inicial, angulo_objetivo)
+#         angulo_inicial = angulo_objetivo
+        move(angle)
+        return render_template('camera.html', current_time=current_time, weather_info=weather_info, description=description)
 @app.route('/video_feed')
 def video_feed():
     return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
