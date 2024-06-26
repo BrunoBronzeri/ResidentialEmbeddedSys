@@ -38,7 +38,7 @@ angulo_objetivo = 180
 ## FUNCTION TO AQUIRE TIME AND WEATHER INFO -----------------------------------------------------------------------------
 def say_hello():
     
-    current_time = datetime.now().strftime("%H:%M:%S") # Timetable acquisition
+    current_time = datetime.now().strftime("%H:%M") # Timetable acquisition
 
     # Acquiring weather via API via weather forecast API URL
     url = f'http://api.openweathermap.org/data/2.5/weather?q={CITY}&appid={API_KEY}&units=metric&lang=pt_br'
@@ -64,14 +64,14 @@ def say_hello():
 
 ## FUNCTION TO MOVE SERVO--------------------------------------------------------------------------------
 def move(angle):
-    #[current_time, weather_info, description] = say_hello()
-    #factory = PiGPIOFactory()
-    #angle = int(angle)
-    #print(angle)
-    #print(type(angle))
-    #angle = int(angle)
-    #servo = AngularServo(17, min_angle = -40, max_angle = 40, pin_factory=factory)
-    #servo.angle = angle
+    # [current_time, weather_info, description] = say_hello()
+    # factory = PiGPIOFactory()
+    # angle = int(angle)
+    # print(angle)
+    # print(type(angle))
+    # angle = int(angle)
+    # servo = AngularServo(17, min_angle = -40, max_angle = 40, pin_factory=factory)
+    # servo.angle = angle
     mini = 2
     maxi = 12
 
