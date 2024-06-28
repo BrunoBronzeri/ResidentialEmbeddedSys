@@ -40,6 +40,17 @@ def say_hello():
     
     current_time = datetime.now().strftime("%H:%M") # Timetable acquisition
 
+    # --------------- To know if it's day or night ------------------
+    # Converter a hora atual em um objeto datetime para comparação
+    current_hour = datetime.now().hour
+
+    # Definir os períodos do dia e da noite
+    if 6 <= current_hour < 18:
+        day_night = "dia"
+    else:
+        day_night = "noite"
+    # ---------------------------------------------------------------
+
     # Acquiring weather via API via weather forecast API URL
     url = f'http://api.openweathermap.org/data/2.5/weather?q={CITY}&appid={API_KEY}&units=metric&lang=pt_br'
     
@@ -124,24 +135,26 @@ def main():
 
 @app.route('/bbb1')
 def teste():
-    led = LED(17)
+    [current_time, weather_info, description] = say_hello()
+    # led = LED(17)
 
-    while True:
-        led.on()
-        sleep(1)
-        led.off()
-        sleep(1)
+    # while True:
+    #     led.on()
+    #     sleep(1)
+    #     led.off()
+    #     sleep(1)
+    return redirect(url_for('led_on'))
 
 @app.route('/ledon', methods=["POST", "GET"])
 def led_on():
     [current_time, weather_info, description] = say_hello()
     
     if request.method == "POST":
-        valor = request.form["nm"]
-        if valor == "ON":
-            return redirect(url_for("teste"))
-        elif valor == "OFF":
-            return redirect(url_for("teste"))
+        valor = request.form.get("nm")
+        if valor == "on":
+            return jsonify({"status": "success", "message": "LED is now ON"})
+        elif valor == "off":
+            return jsonify({"status": "success", "message": "LED is now OFF"})
     else:
         return render_template("ligabutao.html", current_time=current_time, weather_info=weather_info, description=description)
     

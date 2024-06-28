@@ -1,10 +1,60 @@
 {%extends "base.html"%}
 
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='light.css') }}">
+{% endblock %}
+
 {% block content %}
-<button onclick="window.location.href='/main'">Retorno</button>
-<h1>Ligar Botão</h1>
-<form action="#" method = "post">
-    <input type="submit" name="nm" value="ON"/>
-    <input type="submit" name="nm" value="OFF"/>
-</form>
+<div>
+    <div class="rtrn">
+        <button onclick="window.location.href='/main'">
+            <img src="../static/images/return.png" alt="return">
+        </button>
+    </div>
+    
+    <div class="frame">
+        <div>
+            <h1>LED 1</h1>
+            <!-- <form  action="/ledon" method = "post" id="ledForm"> -->
+                <button name="nm" id="ledButton" class="off" onclick="toggleLed()">
+                    <img src="../static/images/lightBulbOFFsvg.svg">
+                </button>
+            <!-- </form> -->
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleLed() {
+        const ledButton = document.getElementById('ledButton');
+        const currentState = ledButton.classList.contains('on') ? 'on' : 'off';
+
+        // Envia requisição AJAX para controlar o LED
+        fetch('/ledon', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `nm=${currentState}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data.message);
+            if (currentState === 'on') {
+                ledButton.classList.remove('on');
+                ledButton.classList.add('off');
+                ledButton.innerHTML = '<img src="../static/images/lightBulbOFFsvg.svg">';
+            } else {
+                ledButton.classList.remove('off');
+                ledButton.classList.add('on');
+                ledButton.innerHTML = '<img src="../static/images/lightBulb.svg">';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+</script>
+
+
 {% endblock %}

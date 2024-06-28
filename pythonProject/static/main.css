@@ -1,23 +1,38 @@
 .frame {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
     padding: 0 5px;
     box-sizing: border-box;
-    margin-top: 2em;
+    margin-top: 5em;
 }
 
 button {
     background-color: #3498db;
     color: white;
     padding: 30px 50px;
-    border: none;
+    border: 5px solid black;;
     border-radius: 8px;
     font-size: 1em;
     cursor: pointer;
     transition: background-color 0.3s, transform 0.3s;
 }
 
+button img {
+    min-width: 200px;
+}
+
 button:hover {
     background-color: #2980b9;
     transform: scale(1.05);
+}
+
+@media (max-width: 800px) {
+    button {
+        padding: 10px 20px;
+        background-color: red;
+    }
+
+    button img{
+        min-width: 190px;
+    }
 }
