@@ -1,0 +1,24 @@
+.cam img {
+    min-width: 600px;
+}
+
+h1 {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.camera button {
+    background-color: #3498db;
+    color: white;
+    padding: 3px 5px;
+    border: 3px solid black;
+    border-radius: 2px;
+    font-size: 0.3em;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+button:hover {
+    background-color: #2980b9;
+    transform: scale(1.05);
+}
+
