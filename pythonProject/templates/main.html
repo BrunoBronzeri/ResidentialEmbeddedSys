@@ -1,17 +1,23 @@
 {%extends "base.html" %}
 
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+{% endblock %}
+
 {% block content %}
-<div>
-    <!-- <form action="#" method="get">
-        <input type="submit" name="lumi" value="luz">
-    </form> -->
-    <button onclick="window.location.href='/ledon'">Iluminação</button>
-</div>
-<div>
-    <button onclick="window.location.href='/cam'">Monitoramento & Segurança</button>
-</div>
-<div>
-    <button onclick="window.location.href='/temp'">Temperatura</button>
+<div class="frame">
+    <div>
+        <!-- <form action="#" method="get">
+            <input type="submit" name="lumi" value="luz">
+        </form> -->
+        <button onclick="window.location.href='/ledon'">Iluminação</button>
+    </div>
+    <div>
+        <button onclick="window.location.href='/cam'">Monitoramento & Segurança</button>
+    </div>
+    <div>
+        <button onclick="window.location.href='/temp'">Temperatura</button>
+    </div>
 </div>
 
 {% endblock %}

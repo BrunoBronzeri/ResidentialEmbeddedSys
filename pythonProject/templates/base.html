@@ -15,21 +15,39 @@
             window.onload = updateTime;
         </script>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        {% block css %}<link rel="stylesheet" href="styles.css">{% endblock %} 
+        <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}"> 
+        {% block css %}{% endblock %}
         <!-- add css file link -->
     </head>
     <body>
-        <div id="clock">{{ current_time }}</div>
-        <h1>Smart HUB - Moratellix</h1>
+        <div class="container">
+            <div class="line">
+                <div id="clock" class="clock">
+                    {{ current_time }}
+                </div>
+                <div class="weather">
+                    {% if weather_info %}
+                        {% if weather_info.description == "nublado" %}
+                            <img src="../static/images/w_cloudy.png" alt='day_cloudy'>
+                        {% else %}
+                            <img src="../static/images/w_n_rainny.png" alt="night_rainny">
+                        {% endif %}
+                        <p> {{ weather_info.temperature }}°C - {{weather_info.description}}</p>
+                    {% else %}
+                        <p>Não foi possível obter a previsão do tempo.</p>
+                    {% endif %}
+                </div>
+                
+            </div>
+            
+            <div class="hub">
+                <h1>Smart HUB - Moratellix</h1>
+            </div>
+        </div>
 
-        <h1>Previsão do Tempo para {{ weather_info.city }}</h1>
-        {% if weather_info %}
-            <p>Temperatura: {{ weather_info.temperature }}°C - {{weather_info.description}}</p>
-        {% else %}
-            <p>Não foi possível obter a previsão do tempo.</p>
-        {% endif %}
         <div>
             {% block content %}
             {% endblock %}
+        </div>
     </body>
 </html>
