@@ -21,7 +21,7 @@ servo_pin = 18
 myFactory = PiGPIOFactory()
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(servo_pin, GPIO.OUT)
-GPIO.setup(17,GPIO.OUT)
+GPIO.setup(27,GPIO.OUT)
 
 # PWM config
 pwm = GPIO.PWM(servo_pin, 50)
@@ -79,6 +79,8 @@ def say_hello():
 def move(angle):
     mini = 2
     maxi = 12
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(servo_pin, GPIO.OUT)
 
     duty = mini + (angle / 180)*(maxi-mini)
     GPIO.output(servo_pin, True)
@@ -129,17 +131,17 @@ def main():
 @app.route('/state')
 def manipulando(valor):
     GPIO.setmode(GPIO.BCM)
-    GPIO.setup(17,GPIO.OUT)
+    GPIO.setup(27,GPIO.OUT)
     if valor == "on":
         print(valor)
         print("ligando led")
-        GPIO.output(17,GPIO.HIGH)
+        GPIO.output(27,GPIO.HIGH)
         return 0
 
     elif valor == "off":
         print(valor)
         print("deligando led")
-        GPIO.output(17,GPIO.LOW)
+        GPIO.output(27,GPIO.LOW)
         GPIO.cleanup()
         return 0
 
