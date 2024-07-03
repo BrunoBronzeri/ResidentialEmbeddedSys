@@ -1,6 +1,17 @@
 {% extends "base.html" %}
 
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='temp.css') }}">
+{% endblock %}
+
 {% block content %}
-<button onclick="window.location.href='/main'">Retorno</button>
-<h1>Teste temp</h1>
+<div class="rtrn">
+    <button onclick="window.location.href='/main'">
+        <img src="../static/images/return.png" alt="return">
+    </button>
+</div>
+<div class="frame">
+    <h1>Teste temp</h1>
+</div>
+
 {% endblock %}
