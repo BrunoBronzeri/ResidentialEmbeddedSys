@@ -16,8 +16,8 @@
         <div>
             <h1>LED 1</h1>
             <!-- <form  action="/ledon" method = "post" id="ledForm"> -->
-                <button name="nm" id="ledButton" class="off" onclick="toggleLed()">
-                    <img src="../static/images/lightBulbOFFsvg.svg">
+                <button name="nm" id="ledButton" class="{{ led_state }}" onclick="toggleLed()">
+                    <img src="../static/images/{{ 'lightBulb.svg' if led_state == 'on' else 'lightBulbOFFsvg.svg' }}">
                 </button>
             <!-- </form> -->
         </div>
@@ -25,11 +25,31 @@
 </div>
 
 <script>
+    function setCookie(name, value, days) {
+        var expires = "";
+        if (days) {
+            var date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            expires = "; expires=" + date.toUTCString();
+        }
+        document.cookie = name + "=" + (value || "") + expires + "; path=/";
+    }
+
+    function getCookie(name) {
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+        }
+        return null;
+    }
+
     function toggleLed() {
         const ledButton = document.getElementById('ledButton');
         const currentState = ledButton.classList.contains('on') ? 'on' : 'off';
 
-        // Envia requisição AJAX para controlar o LED
         fetch('/ledon', {
             method: 'POST',
             headers: {
@@ -44,16 +64,33 @@
                 ledButton.classList.remove('on');
                 ledButton.classList.add('off');
                 ledButton.innerHTML = '<img src="../static/images/lightBulbOFFsvg.svg">';
+                setCookie('ledState', 'off', 1); // Salva estado 'off' no cookie
             } else {
                 ledButton.classList.remove('off');
                 ledButton.classList.add('on');
                 ledButton.innerHTML = '<img src="../static/images/lightBulb.svg">';
+                setCookie('ledState', 'on', 1); // Salva estado 'on' no cookie
             }
         })
         .catch(error => {
             console.error('Error:', error);
         });
     }
+
+    // Recupera o estado do LED dos cookies quando a página carrega
+    document.addEventListener("DOMContentLoaded", function() {
+        const ledState = getCookie('ledState');
+        const ledButton = document.getElementById('ledButton');
+        if (ledState === 'on') {
+            ledButton.classList.remove('off');
+            ledButton.classList.add('on');
+            ledButton.innerHTML = '<img src="../static/images/lightBulb.svg">';
+        } else {
+            ledButton.classList.remove('on');
+            ledButton.classList.add('off');
+            ledButton.innerHTML = '<img src="../static/images/lightBulbOFFsvg.svg">';
+        }
+    });
 </script>
 
 

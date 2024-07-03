@@ -15,7 +15,7 @@
         <img src="../static/images/return.png" alt="return">
     </button>
 </div>
-<h1>Câmera Sala A303</h1>
+<h1>Câmera Sala A305</h1>
     <div class="cam">
 
         <div id="loading" class="loading">
@@ -23,7 +23,7 @@
             <p>Carregando...</p>
         </div>
 
-        <img src="{{ url_for('video_feed') }}" width="640" height="480">
+        <img id="opencv" src="{{ url_for('video_feed') }}">
     </div>
 <div class="slider">
     <input type="range" id="angle" name="angle" min="0" max="180" value="0">
@@ -64,8 +64,8 @@
     document.addEventListener("DOMContentLoaded", function() {
     setTimeout(function() {
         document.getElementById('loading').style.display = 'none';
-        document.getElementById('content').style.display = 'block';
-    }, 5000); // 5000 milissegundos = 5 segundos
+        document.getElementById('opencv').style.display = 'block';
+    }, 2000); // 5000 milissegundos = 5 segundos
 });
 </script>
 {% endblock %}
