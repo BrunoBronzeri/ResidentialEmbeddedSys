@@ -17,9 +17,11 @@ CITY = 'Blumenau' # City name to be searched through API
 
 #--------------------------------
 servo_pin = 18
+
 myFactory = PiGPIOFactory()
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(servo_pin, GPIO.OUT)
+GPIO.setup(17,GPIO.OUT)
 
 # PWM config
 pwm = GPIO.PWM(servo_pin, 50)
@@ -124,19 +126,24 @@ def main():
     return render_template("main.html", current_time=current_time, weather_info=weather_info, description=description)
 
 # ------------------------------------------------- LED -----------------------------------------------------------------
+@app.route('/state')
+def manipulando(valor):
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(17,GPIO.OUT)
+    if valor == "on":
+        print(valor)
+        print("ligando led")
+        GPIO.output(17,GPIO.HIGH)
+        return 0
 
-@app.route('/bbb1')
-def teste():
-    [current_time, weather_info, description] = say_hello()
-    # led = LED(17)
+    elif valor == "off":
+        print(valor)
+        print("deligando led")
+        GPIO.output(17,GPIO.LOW)
+        GPIO.cleanup()
+        return 0
 
-    # while True:
-    #     led.on()
-    #     sleep(1)
-    #     led.off()
-    #     sleep(1)
-    return redirect(url_for('led_on'))
-
+        
 @app.route('/ledon', methods=["POST", "GET"])
 def led_on():
     [current_time, weather_info, description] = say_hello()
@@ -144,16 +151,13 @@ def led_on():
     if request.method == "POST":
         valor = request.form.get("nm")
         if valor == "on":
+            manipulando(valor)
             return jsonify({"status": "success", "message": "LED is now ON"})
         elif valor == "off":
+            manipulando(valor)
             return jsonify({"status": "success", "message": "LED is now OFF"})
     else:
         return render_template("ligabutao.html", current_time=current_time, weather_info=weather_info, description=description)
-    
-@app.route('/led')
-def led():
-    [current_time, weather_info, description] = say_hello()
-    return render_template("index.html", current_time=current_time, weather_info=weather_info, description=description)
 
 # ------------------------------------------------- LIGHT ----------------------------------------------------------------
 
