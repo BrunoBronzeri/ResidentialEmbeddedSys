@@ -12,20 +12,6 @@
 </div>
 <div class="frame">
     <h1>Teste temp</h1>
-    <p id="temperature">Carregando...</p>
 </div>
-
-<script>
-    function fetchTemperature() {
-        fetch('/temperature')
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('temperature').innerText = data.temperature.toFixed(2) + ' °C';
-            })
-            .catch(error => console.error('Error:', error));
-    }
-
-    setInterval(fetchTemperature, 1000); // Atualiza a cada segundo
-</script>
 
 {% endblock %}
