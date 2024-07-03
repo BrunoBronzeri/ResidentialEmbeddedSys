@@ -6,6 +6,10 @@
     margin-top: 5em;
 }
 
+.frame img {
+    max-width: 40px;
+}
+
 button {
     background-color: #3498db;
     color: white;

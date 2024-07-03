@@ -42,6 +42,6 @@
     justify-content: center;
 }
 
-img {
+.weather img {
     max-width: 40px;
 }

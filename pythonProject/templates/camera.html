@@ -15,11 +15,11 @@
         <img src="../static/images/return.png" alt="return">
     </button>
 </div>
-<h1>Webcam Stream</h1>
+<h1>Câmera Sala A303</h1>
     <div class="cam">
         <img src="{{ url_for('video_feed') }}" width="640" height="480">
     </div>
-<div>
+<div class="slider">
     <input type="range" id="angle" name="angle" min="0" max="180" value="0">
     <span id="sliderValue">0</span>
     <form id="moveForm" action="#" method="post">
