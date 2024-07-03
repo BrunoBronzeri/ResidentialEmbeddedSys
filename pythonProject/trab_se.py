@@ -1,11 +1,11 @@
 from flask import Flask, render_template, redirect, request, url_for, Response, jsonify
 
 # BROKENzinho
-# from gpiozero.pins.pigpio import PiGPIOFactory
-# from gpiozero import LED, AngularServo, Servo
+from gpiozero.pins.pigpio import PiGPIOFactory
+from gpiozero import LED, AngularServo, Servo
 # BROKENZINHO
 
-# import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 
 from time import sleep
 import cv2 #importa o cv2, ás vezes
@@ -17,13 +17,13 @@ CITY = 'Blumenau' # City name to be searched through API
 
 #--------------------------------
 servo_pin = 18
-# myFactory = PiGPIOFactory()
-# GPIO.setmode(GPIO.BCM)
-# GPIO.setup(servo_pin, GPIO.OUT)
+myFactory = PiGPIOFactory()
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(servo_pin, GPIO.OUT)
 
 # PWM config
-# pwm = GPIO.PWM(servo_pin, 50)
-# pwm.start(0)
+pwm = GPIO.PWM(servo_pin, 50)
+pwm.start(0)
 #-------------------------------
 
 app = Flask(__name__)
@@ -79,11 +79,11 @@ def move(angle):
     maxi = 12
 
     duty = mini + (angle / 180)*(maxi-mini)
-    # GPIO.output(servo_pin, True)
-    # pwm.ChangeDutyCycle(duty)
-    # sleep(1)
-    # GPIO.output(servo_pin, False)
-    # pwm.ChangeDutyCycle(0)
+    GPIO.output(servo_pin, True)
+    pwm.ChangeDutyCycle(duty)
+    sleep(1)
+    GPIO.output(servo_pin, False)
+    pwm.ChangeDutyCycle(0)
 #     myServo.value = 0
     
     return jsonify({"status": "success", "angle": angle})

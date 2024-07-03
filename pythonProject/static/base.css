@@ -45,3 +45,7 @@
 .weather img {
     max-width: 40px;
 }
+
+body {
+    background-color: rgb(168,197,197);
+}
