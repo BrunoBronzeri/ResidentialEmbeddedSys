@@ -10,8 +10,27 @@
         <img src="../static/images/return.png" alt="return">
     </button>
 </div>
-<div class="frame">
-    <h1>Teste temp</h1>
+<div class="clima">
+    <h1>Previsão do Tempo para {{ weather_info.city }}</h1>
+    {% if weather_info %}
+        {% if weather_info.description == "nublado" or
+        weather_info.description == "nuvens dispersas" or weather_info.description == "algumas nuvens" %}
+            <img src="../static/images/w_cloudy.png" alt='day_cloudy'>
+        {% elif weather_info.description == "chuva" %}
+            <img src="../static/images/w_rainny.png" alt="day_rainny">
+        {% else %}
+            <img src="../static/images/w_sunny.png" alt="day_sunny">
+        {% endif %}
+        <p> {{ weather_info.temperature }}°C - {{weather_info.description}}</p>
+        <p>Umidade: {{ weather_info.humidity }}%</p>
+        <p>feels like: {{ weather_info.feels }}ºC</p>
+        <p>Velocidade do Vento: {{ weather_info.wind_speed }}</p>
+        <p>Pressão: {{ weather_info.pressure }} Pa</p>
+        <p>Sunrise: {{ weather_info.sunrise_timestamp }}</p>
+    {% else %}
+        <p>Não foi possível obter a previsão do tempo.</p>
+    {% endif %}
+    <p></p>
 </div>
 
 {% endblock %}
