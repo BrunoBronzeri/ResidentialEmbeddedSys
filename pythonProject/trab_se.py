@@ -1,11 +1,11 @@
 from flask import Flask, render_template, redirect, request, url_for, Response, jsonify
 
 # BROKENzinho
-from gpiozero.pins.pigpio import PiGPIOFactory
-from gpiozero import LED, AngularServo, Servo
+# from gpiozero.pins.pigpio import PiGPIOFactory
+# from gpiozero import LED, AngularServo, Servo
 # BROKENZINHO
 
-import RPi.GPIO as GPIO
+# import RPi.GPIO as GPIO
 
 from time import sleep
 import cv2 #importa o cv2, ás vezes
@@ -18,12 +18,12 @@ CITY = 'Blumenau' # City name to be searched through API
 #--------------------------------
 servo_pin = 18
 # myFactory = PiGPIOFactory()
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(servo_pin, GPIO.OUT)
+# GPIO.setmode(GPIO.BCM)
+# GPIO.setup(servo_pin, GPIO.OUT)
 
 # PWM config
-pwm = GPIO.PWM(servo_pin, 50)
-pwm.start(0)
+# pwm = GPIO.PWM(servo_pin, 50)
+# pwm.start(0)
 #-------------------------------
 
 app = Flask(__name__)
@@ -39,6 +39,17 @@ angulo_objetivo = 180
 def say_hello():
     
     current_time = datetime.now().strftime("%H:%M") # Timetable acquisition
+
+    # --------------- To know if it's day or night ------------------
+    # Converter a hora atual em um objeto datetime para comparação
+    current_hour = datetime.now().hour
+
+    # Definir os períodos do dia e da noite
+    if 6 <= current_hour < 18:
+        day_night = "dia"
+    else:
+        day_night = "noite"
+    # ---------------------------------------------------------------
 
     # Acquiring weather via API via weather forecast API URL
     url = f'http://api.openweathermap.org/data/2.5/weather?q={CITY}&appid={API_KEY}&units=metric&lang=pt_br'
@@ -68,11 +79,11 @@ def move(angle):
     maxi = 12
 
     duty = mini + (angle / 180)*(maxi-mini)
-    GPIO.output(servo_pin, True)
-    pwm.ChangeDutyCycle(duty)
-    sleep(1)
-    GPIO.output(servo_pin, False)
-    pwm.ChangeDutyCycle(0)
+    # GPIO.output(servo_pin, True)
+    # pwm.ChangeDutyCycle(duty)
+    # sleep(1)
+    # GPIO.output(servo_pin, False)
+    # pwm.ChangeDutyCycle(0)
 #     myServo.value = 0
     
     return jsonify({"status": "success", "angle": angle})
@@ -116,24 +127,26 @@ def main():
 
 @app.route('/bbb1')
 def teste():
-    led = LED(17)
+    [current_time, weather_info, description] = say_hello()
+    # led = LED(17)
 
-    while True:
-        led.on()
-        sleep(1)
-        led.off()
-        sleep(1)
+    # while True:
+    #     led.on()
+    #     sleep(1)
+    #     led.off()
+    #     sleep(1)
+    return redirect(url_for('led_on'))
 
 @app.route('/ledon', methods=["POST", "GET"])
 def led_on():
     [current_time, weather_info, description] = say_hello()
     
     if request.method == "POST":
-        valor = request.form["nm"]
-        if valor == "ON":
-            return redirect(url_for("teste"))
-        elif valor == "OFF":
-            return redirect(url_for("teste"))
+        valor = request.form.get("nm")
+        if valor == "on":
+            return jsonify({"status": "success", "message": "LED is now ON"})
+        elif valor == "off":
+            return jsonify({"status": "success", "message": "LED is now OFF"})
     else:
         return render_template("ligabutao.html", current_time=current_time, weather_info=weather_info, description=description)
     

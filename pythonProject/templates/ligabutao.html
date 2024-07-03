@@ -1,10 +1,97 @@
 {%extends "base.html"%}
 
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='light.css') }}">
+{% endblock %}
+
 {% block content %}
-<button onclick="window.location.href='/main'">Retorno</button>
-<h1>Ligar Botão</h1>
-<form action="#" method = "post">
-    <input type="submit" name="nm" value="ON"/>
-    <input type="submit" name="nm" value="OFF"/>
-</form>
+<div>
+    <div class="rtrn">
+        <button onclick="window.location.href='/main'">
+            <img src="../static/images/return.png" alt="return">
+        </button>
+    </div>
+    
+    <div class="frame">
+        <div>
+            <h1>LED 1</h1>
+            <!-- <form  action="/ledon" method = "post" id="ledForm"> -->
+                <button name="nm" id="ledButton" class="{{ led_state }}" onclick="toggleLed()">
+                    <img src="../static/images/{{ 'lightBulb.svg' if led_state == 'on' else 'lightBulbOFFsvg.svg' }}">
+                </button>
+            <!-- </form> -->
+        </div>
+    </div>
+</div>
+
+<script>
+    function setCookie(name, value, days) {
+        var expires = "";
+        if (days) {
+            var date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            expires = "; expires=" + date.toUTCString();
+        }
+        document.cookie = name + "=" + (value || "") + expires + "; path=/";
+    }
+
+    function getCookie(name) {
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+        }
+        return null;
+    }
+
+    function toggleLed() {
+        const ledButton = document.getElementById('ledButton');
+        const currentState = ledButton.classList.contains('on') ? 'on' : 'off';
+
+        fetch('/ledon', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `nm=${currentState}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data.message);
+            if (currentState === 'on') {
+                ledButton.classList.remove('on');
+                ledButton.classList.add('off');
+                ledButton.innerHTML = '<img src="../static/images/lightBulbOFFsvg.svg">';
+                setCookie('ledState', 'off', 1); // Salva estado 'off' no cookie
+            } else {
+                ledButton.classList.remove('off');
+                ledButton.classList.add('on');
+                ledButton.innerHTML = '<img src="../static/images/lightBulb.svg">';
+                setCookie('ledState', 'on', 1); // Salva estado 'on' no cookie
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+
+    // Recupera o estado do LED dos cookies quando a página carrega
+    document.addEventListener("DOMContentLoaded", function() {
+        const ledState = getCookie('ledState');
+        const ledButton = document.getElementById('ledButton');
+        if (ledState === 'on') {
+            ledButton.classList.remove('off');
+            ledButton.classList.add('on');
+            ledButton.innerHTML = '<img src="../static/images/lightBulb.svg">';
+        } else {
+            ledButton.classList.remove('on');
+            ledButton.classList.add('off');
+            ledButton.innerHTML = '<img src="../static/images/lightBulbOFFsvg.svg">';
+        }
+    });
+</script>
+
+
 {% endblock %}
