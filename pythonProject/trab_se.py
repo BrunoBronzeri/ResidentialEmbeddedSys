@@ -1,4 +1,5 @@
 from flask import Flask, render_template, redirect, request, url_for, Response, jsonify
+import spidev
 
 # BROKENzinho
 from gpiozero.pins.pigpio import PiGPIOFactory
@@ -116,6 +117,25 @@ def gen_frames():
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
                     # Concatenates the bytes to form the correct HTTP response
 
+## FUNCTIONS TO READ ANALOG VALUES FOR TEMPERATURE----------------------------------------------------------------------
+# Configuração do SPI
+spi = spidev.SpiDev()
+spi.open(0, 0)
+spi.max_speed_hz = 1350000
+# Função para ler o MCP3008
+def read_channel(channel):
+    adc = spi.xfer2([1, (8 + channel) << 4, 0])
+    data = ((adc[1] & 3) << 8) + adc[2]
+    return data
+
+# Função para obter a temperatura do LM35
+def get_temperature():
+    channel = 0  # Canal em que o LM35 está conectado no MCP3008
+    adc_value = read_channel(channel)
+    millivolts = adc_value * (3300.0 / 1024.0)  # 3.3V referência e 10-bit ADC
+    temp_c = millivolts / 10.0
+    return temp_c
+##-----------------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------ MAIN -----------------------------------------------------------------
 
 @app.route('/main')
@@ -167,7 +187,8 @@ def luz():
 @app.route('/temp')
 def temp():
     [current_time, weather_info, description] = say_hello()
-    return render_template("temp.html", current_time=current_time, weather_info=weather_info, description=description)
+    temp_c = get_temperature()
+    return render_template("temp.html", temperature=temp_c, current_time=current_time, weather_info=weather_info, description=description)
 
 
 # ------------------------------------------------- CAM -------------------------------------------------------------------
