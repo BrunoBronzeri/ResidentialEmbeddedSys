@@ -12,6 +12,8 @@ import cv2 #importa o cv2, ás vezes
 from datetime import datetime
 import requests
 
+import pytz
+
 API_KEY = '1fd96af488c1e2f6bbc5b108b952ee7c' # Define personal key for API
 CITY = 'Blumenau' # City name to be searched through API
 
@@ -67,7 +69,7 @@ def say_hello():
         humidity = weather_data["main"]["humidity"]
         city = weather_data["name"]
         country = weather_data["sys"]["country"]
-        weather_info = {
+        weather_data = {
             "temperature": temperature,
             "description": description,
             "city": city
@@ -75,9 +77,9 @@ def say_hello():
     else:
         weather_info = None
 
-    return current_time, weather_info, description, humidity, country
+    return current_time, weather_data, description, humidity, country
 #--------------------------------------------------------------------------------------------------------
-def say_hello1():
+def say_hello1(CITY):
     
     current_time = datetime.now().strftime("%H:%M") # Timetable acquisition
 
@@ -112,7 +114,16 @@ def say_hello1():
         wind_speed = weather_data["wind"]["speed"]
         sunrise_timestamp = weather_data["sys"]["sunrise"]
         sunset_timestamp = weather_data["sys"]["sunset"]
-        weather_info = {
+                
+        # Convertendo timestamps de nascer e pôr do sol para horário local
+        timezone = pytz.timezone('America/Sao_Paulo')
+        sunrise = datetime.fromtimestamp(sunrise_timestamp, tz=timezone).strftime('%H:%M')
+        sunset = datetime.fromtimestamp(sunset_timestamp, tz=timezone).strftime('%H:%M')
+
+    else:
+        error_message = f'Erro ao obter dados: {weather_data["message"]}'
+
+    weather_info = {
             "temperature": temperature,
             "description": description,
             "city": city,
@@ -122,17 +133,11 @@ def say_hello1():
             "pressure": pressure,
             "wind": wind_speed,
             "humidity": humidity,
-            "sunrise": sunrise_timestamp,
-            "sunset": sunset_timestamp,
-        }
-        
-        # Convertendo timestamps de nascer e pôr do sol para horário local
-        sunrise = datetime.utcfromtimestamp(sunrise_timestamp).strftime('%H:%M')
-        sunset = datetime.utcfromtimestamp(sunset_timestamp).strftime('%H:%M')
-    else:
-        error_message = f'Erro ao obter dados: {weather_data["message"]}'
+            "sunrise": sunrise,
+            "sunset": sunset,
+    }
 
-    return weather_info, temperature, feels_like, temp_min, temp_max, pressure, humidity, description, wind_speed, sunrise_timestamp, sunset_timestamp, current_time
+    return weather_info, temperature, feels_like, temp_min, temp_max, pressure, humidity, description, wind_speed, sunrise, sunset, current_time
 
 ## FUNCTION TO MOVE SERVO--------------------------------------------------------------------------------
 def move(angle):
@@ -183,8 +188,8 @@ def gen_frames():
 
 @app.route('/main')
 def main():
-    [current_time, weather_info, description, humidity, country] = say_hello()
-    return render_template("main.html", current_time=current_time, weather_info=weather_info, description=description)
+    [current_time, weather_data, description, humidity, country] = say_hello()
+    return render_template("main.html", current_time=current_time, weather_data=weather_data, description=description)
 
 # ------------------------------------------------- LED -----------------------------------------------------------------
 @app.route('/state')
@@ -207,7 +212,7 @@ def manipulando(valor):
         
 @app.route('/ledon', methods=["POST", "GET"])
 def led_on():
-    [current_time, weather_info, description, humidity, country] = say_hello()
+    [current_time, weather_data, description, humidity, country] = say_hello()
     
     if request.method == "POST":
         valor = request.form.get("nm")
@@ -218,21 +223,26 @@ def led_on():
             manipulando(valor)
             return jsonify({"status": "success", "message": "LED is now OFF"})
     else:
-        return render_template("ligabutao.html", current_time=current_time, weather_info=weather_info, description=description)
+        return render_template("ligabutao.html", current_time=current_time, weather_data=weather_data, description=description)
 
 # ------------------------------------------------- LIGHT ----------------------------------------------------------------
 
 @app.route('/luz')
 def luz():
-    [current_time, weather_info, description, humidity, country] = say_hello()
-    return render_template("led_on.html", current_time=current_time, weather_info=weather_info, description=description)
+    [current_time, weather_data, description, humidity, country] = say_hello()
+    return render_template("led_on.html", current_time=current_time, weather_data=weather_data, description=description)
 
 # ------------------------------------------------- TEMP ------------------------------------------------------------------
 
-@app.route('/temp')
+@app.route('/temp', methods=['GET', 'POST'])
 def temp():
-    [weather_info, temperature, feels_like, temp_min, temp_max, pressure, humidity, description, wind_speed, sunrise_timestamp, sunset_timestamp, current_time] = say_hello1()
-    return render_template("temp.html", weather_info=weather_info, temperature=temperature, feels_like=feels_like, temp_min=temp_min, temp_max=temp_max, pressure=pressure, humidity=humidity, description=description, wind_speed=wind_speed, sunrise_timestamp=sunrise_timestamp, sunset_timestamp=sunset_timestamp, current_time=current_time)
+    [current_time, weather_data, description, humidity, country] = say_hello()
+    city = CITY
+    if request.method == 'POST':
+        city = request.form.get('city')
+        print(city)
+    [weather_info, temperature, feels_like, temp_min, temp_max, pressure, humidity, description, wind_speed, sunrise, sunset, current_time] = say_hello1(city)
+    return render_template("temp.html", weather_data=weather_data, weather_info=weather_info, temperature=temperature, feels_like=feels_like, temp_min=temp_min, temp_max=temp_max, pressure=pressure, humidity=humidity, description=description, wind_speed=wind_speed, sunrise=sunrise, sunset=sunset, current_time=current_time)
 
 
 # ------------------------------------------------- CAM -------------------------------------------------------------------
@@ -240,17 +250,17 @@ def temp():
 def cam_on():
     global angulo_inicial, angulo_objetivo
     if request.method == 'GET':
-        [current_time, weather_info, description, humidity, country] = say_hello()
-        return render_template('camera.html', current_time=current_time, weather_info=weather_info, description=description)
+        [current_time, weather_data, description, humidity, country] = say_hello()
+        return render_template('camera.html', current_time=current_time, weather_data=weather_data, description=description)
     else:
-        [current_time, weather_info, description, humidity, country] = say_hello()
+        [current_time, weather_data, description, humidity, country] = say_hello()
         angle = request.form['angle']
         angle = int(angle)
 #         angulo_objetivo = angle
 #         suave(angulo_inicial, angulo_objetivo)
 #         angulo_inicial = angulo_objetivo
         move(angle)
-        return render_template('camera.html', current_time=current_time, weather_info=weather_info, description=description)
+        return render_template('camera.html', current_time=current_time, weather_data=weather_data, description=description)
 @app.route('/video_feed')
 def video_feed():
     return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')

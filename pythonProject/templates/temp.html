@@ -10,6 +10,12 @@
         <img src="../static/images/return.png" alt="return">
     </button>
 </div>
+<div>
+    <form method="POST" action="/temp">
+        <input type="text" placeholder="insira uma cidade" id="city" name="city"/>
+        <button type="submit">Pesquisar</button>
+    </form>
+</div>
 <div class="clima">
     <h1>Previsão do Tempo para {{ weather_info.city }}</h1>
     {% if weather_info %}
@@ -21,16 +27,24 @@
         {% else %}
             <img src="../static/images/w_sunny.png" alt="day_sunny">
         {% endif %}
-        <p> {{ weather_info.temperature }}°C - {{weather_info.description}}</p>
+    {% else %}
+        <p style="color: red;">Não foi possível obter a previsão do tempo.</p>
+    {% endif %}
+    {% if weather_info %}
+        <h2>Previsão do Tempo para {{ weather_info.city }}</h2>
+        <p>Temperatura Atual: {{ weather_info.temperature }}°C</p>
+        <p>Sensação Térmica: {{ weather_info.feels }}°C</p>
+        <p>Temperatura Mínima: {{ weather_info.min }}°C</p>
+        <p>Temperatura Máxima: {{ weather_info.max }}°C</p>
+        <p>Pressão Atmosférica: {{ weather_info.pressure }} hPa</p>
         <p>Umidade: {{ weather_info.humidity }}%</p>
-        <p>feels like: {{ weather_info.feels }}ºC</p>
-        <p>Velocidade do Vento: {{ weather_info.wind_speed }}</p>
-        <p>Pressão: {{ weather_info.pressure }} Pa</p>
-        <p>Sunrise: {{ weather_info.sunrise_timestamp }}</p>
+        <p>Descrição: {{ weather_info.description }}</p>
+        <p>Velocidade do Vento: {{ weather_info.wind }} m/s</p>
+        <p>Nascer do Sol: {{ weather_info.sunrise }}</p>
+        <p>Pôr do Sol: {{ weather_info.sunset }}</p>
     {% else %}
         <p>Não foi possível obter a previsão do tempo.</p>
-    {% endif %}
-    <p></p>
+{% endif %}
 </div>
 
 {% endblock %}

@@ -26,16 +26,16 @@
                     {{ current_time }}
                 </div>
                 <div class="weather">
-                    {% if weather_info %}
-                        {% if weather_info.description == "nublado" or
-                        weather_info.description == "nuvens dispersas" or weather_info.description == "algumas nuvens" %}
+                    {% if weather_data %}
+                        {% if weather_data.description == "nublado" or
+                        weather_data.description == "nuvens dispersas" or weather_data.description == "algumas nuvens" %}
                             <img src="../static/images/w_cloudy.png" alt='day_cloudy'>
-                        {% elif weather_info.description == "chuva" %}
+                        {% elif weather_data.description == "chuva" %}
                             <img src="../static/images/w_rainny.png" alt="day_rainny">
                         {% else %}
                             <img src="../static/images/w_sunny.png" alt="day_sunny">
                         {% endif %}
-                        <p> {{ weather_info.temperature }}°C - {{weather_info.description}}</p>
+                        <p> {{ weather_data.temperature }}°C - {{weather_data.description}}</p>
                     {% else %}
                         <p>Não foi possível obter a previsão do tempo.</p>
                     {% endif %}
