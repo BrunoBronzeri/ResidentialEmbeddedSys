@@ -10,15 +10,16 @@
         <img src="../static/images/return.png" alt="return">
     </button>
 </div>
-<div>
+<div class="input">
     <form method="POST" action="/temp">
-        <input type="text" placeholder="insira uma cidade" id="city" name="city"/>
+        <input type="text" placeholder="Insira uma cidade" id="city" name="city"/>
         <button type="submit">Pesquisar</button>
     </form>
 </div>
 <div class="clima">
-    <h1>Previsão do Tempo para {{ weather_info.city }}</h1>
+    <h1>Previsão do Tempo para {{ weather_info.city }} - {{ weather_info.country }}</h1>
     {% if weather_info %}
+    <div class="current">
         {% if weather_info.description == "nublado" or
         weather_info.description == "nuvens dispersas" or weather_info.description == "algumas nuvens" %}
             <img src="../static/images/w_cloudy.png" alt='day_cloudy'>
@@ -29,19 +30,24 @@
         {% endif %}
     {% else %}
         <p style="color: red;">Não foi possível obter a previsão do tempo.</p>
+    </div>
     {% endif %}
     {% if weather_info %}
-        <h2>Previsão do Tempo para {{ weather_info.city }}</h2>
-        <p>Temperatura Atual: {{ weather_info.temperature }}°C</p>
-        <p>Sensação Térmica: {{ weather_info.feels }}°C</p>
-        <p>Temperatura Mínima: {{ weather_info.min }}°C</p>
-        <p>Temperatura Máxima: {{ weather_info.max }}°C</p>
-        <p>Pressão Atmosférica: {{ weather_info.pressure }} hPa</p>
-        <p>Umidade: {{ weather_info.humidity }}%</p>
-        <p>Descrição: {{ weather_info.description }}</p>
-        <p>Velocidade do Vento: {{ weather_info.wind }} m/s</p>
-        <p>Nascer do Sol: {{ weather_info.sunrise }}</p>
-        <p>Pôr do Sol: {{ weather_info.sunset }}</p>
+        <div class="current">
+            <p>Temperatura Atual: {{ weather_info.temperature }}°C</p>
+            <p>Sensação Térmica: {{ weather_info.feels }}°C</p>
+            <p>Temperatura Mínima: {{ weather_info.min }}°C</p>
+            <p>Temperatura Máxima: {{ weather_info.max }}°C</p>
+            <p>Pressão Atmosférica: {{ weather_info.pressure }} hPa</p>
+        </div>
+        <div>
+            <p>Umidade: {{ weather_info.humidity }}%</p>
+            <p>Descrição: {{ weather_info.description }}</p>
+            <p>Velocidade do Vento: {{ weather_info.wind }} m/s</p>
+            <p>Nascer do Sol: {{ weather_info.sunrise }}</p>
+            <p>Pôr do Sol: {{ weather_info.sunset }}</p>
+        </div>
+        
     {% else %}
         <p>Não foi possível obter a previsão do tempo.</p>
 {% endif %}

@@ -38,6 +38,11 @@ h1 {
     transition: background-color 0.3s, transform 0.3s;
 }
 
+.camera button:hover {
+    background-color: #2980b9;
+    transform: scale(1.05);
+}
+
 button:hover {
     background-color: #2980b9;
     transform: scale(1.05);

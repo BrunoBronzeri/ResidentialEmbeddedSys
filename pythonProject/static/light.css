@@ -13,6 +13,11 @@
     transition: background-color 0.3s, transform 0.3s;
 }
 
+.rtrn button:hover {
+    background-color: #2980b9;
+    transform: scale(1.05);
+}
+
 .rtrn img {
     max-width: 40px;
 }
