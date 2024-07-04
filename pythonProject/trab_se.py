@@ -1,11 +1,11 @@
 from flask import Flask, render_template, redirect, request, url_for, Response, jsonify
 
 # BROKENzinho
-# from gpiozero.pins.pigpio import PiGPIOFactory
-# from gpiozero import LED, AngularServo, Servo
+from gpiozero.pins.pigpio import PiGPIOFactory
+from gpiozero import LED, AngularServo, Servo
 # BROKENZINHO
 
-# import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 
 from time import sleep
 import cv2 #importa o cv2, ás vezes
@@ -20,20 +20,20 @@ CITY = 'Blumenau' # City name to be searched through API
 #--------------------------------
 servo_pin = 18
 
-# myFactory = PiGPIOFactory()
-# GPIO.setmode(GPIO.BCM)
-# GPIO.setup(servo_pin, GPIO.OUT)
-# GPIO.setup(27,GPIO.OUT)
+myFactory = PiGPIOFactory()
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(servo_pin, GPIO.OUT)
+GPIO.setup(27,GPIO.OUT)
 
-# PWM config
-# pwm = GPIO.PWM(servo_pin, 50)
-# pwm.start(0)
+PWM config
+pwm = GPIO.PWM(servo_pin, 50)
+pwm.start(0)
 #-------------------------------
 
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
 
-# myServo = Servo(servo_pin, min_pulse_width = 0.05/100, max_pulse_width = 2.5/1000, pin_factory = myFactory)
+## myServo = Servo(servo_pin, min_pulse_width = 0.05/100, max_pulse_width = 2.5/1000, pin_factory = myFactory)
 
 angulo_inicial = 0
 angulo_objetivo = 180
@@ -152,7 +152,7 @@ def move(angle):
     sleep(1)
     GPIO.output(servo_pin, False)
     pwm.ChangeDutyCycle(0)
-#     myServo.value = 0
+##     myServo.value = 0
     
     return jsonify({"status": "success", "angle": angle})
     
@@ -169,7 +169,7 @@ def suave(start, end, step=1, delay=0.02):
 
 ## FUNCTION TO GENERATE CAMREA FRAMES-------------------------------------------------------------------------------------
 def gen_frames():
-   # pipeline = "v4l2src device = /dev/vide0 ! videoconvert ! appsink"
+   ## pipeline = "v4l2src device = /dev/vide0 ! videoconvert ! appsink"
     cap = cv2.VideoCapture(0)  # Capture from video device 0 (typically the webcam)
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 320)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 240)
@@ -256,9 +256,9 @@ def cam_on():
         [current_time, weather_data, description, humidity, country] = say_hello()
         angle = request.form['angle']
         angle = int(angle)
-#         angulo_objetivo = angle
-#         suave(angulo_inicial, angulo_objetivo)
-#         angulo_inicial = angulo_objetivo
+##         angulo_objetivo = angle
+##         suave(angulo_inicial, angulo_objetivo)
+##         angulo_inicial = angulo_objetivo
         move(angle)
         return render_template('camera.html', current_time=current_time, weather_data=weather_data, description=description)
 @app.route('/video_feed')
